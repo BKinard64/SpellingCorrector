@@ -16,6 +16,10 @@ public class Trie implements ITrie {
         return null;
     }
 
+    public INode getRoot() {
+        return root;
+    }
+
     @Override
     public int getWordCount() {
         return wordCount;
@@ -33,7 +37,57 @@ public class Trie implements ITrie {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if(obj == null) {
+            return false;
+        }
+
+        if(obj == this) {
+            return true;
+        }
+
+        if(obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Trie dict = (Trie)obj;
+
+        // If the tries have different word counts OR different node counts, they are not equal
+        if(dict.getWordCount() != this.getWordCount() || dict.getNodeCount() != this.getNodeCount()) {
+            return false;
+        }
+
+        return equalsHelper(dict.getRoot(), this.root);
+    }
+
+    private boolean equalsHelper(INode n1, INode n2) {
+        // If the node's counts differ, they are not equal
+        if(n1.getValue() != n2.getValue()) {
+            return false;
+        }
+
+        // If the nodes have different children, they are not equal
+        for(int i = 0; i < 26; i++) {
+            if(n1.getChildren()[i] == null) {
+                if(n2.getChildren()[i] != null) {
+                    return false;
+                }
+            } else {
+                if(n2.getChildren()[i] == null) {
+                    return false;
+                }
+            }
+        }
+
+        // Recursively call equalsHelper on children until difference is found or entire tree is traversed
+        for(int j = 0; j < 26; j++) {
+            INode child1 = n1.getChildren()[j];
+            INode child2 = n2.getChildren()[j];
+            if(child1 != null) {
+                return equalsHelper(child1, child2);
+            }
+        }
+
+        return true;
     }
 
     @Override
