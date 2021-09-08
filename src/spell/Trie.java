@@ -1,6 +1,11 @@
 package spell;
 
 public class Trie implements ITrie {
+
+    private INode root;
+    private int wordCount;
+    private int nodeCount;
+
     @Override
     public void add(String word) {
 
@@ -13,11 +18,11 @@ public class Trie implements ITrie {
 
     @Override
     public int getWordCount() {
-        return 0;
+        return wordCount;
     }
 
     @Override
     public int getNodeCount() {
-        return 0;
+        return nodeCount;
     }
 }
