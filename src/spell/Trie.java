@@ -32,7 +32,13 @@ public class Trie implements ITrie {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        // Find index of first null node in root
+        int index = 0;
+        while(root.getChildren()[index] != null && index < 26) {
+            index++;
+        }
+        // Add 1 to index and multiply it by the sum of wordCount and nodeCount
+        return (index + 1) * (wordCount + nodeCount);
     }
 
     @Override
