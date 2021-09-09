@@ -23,7 +23,7 @@ public class Trie implements ITrie {
         addHelper(word, 0, root);
     }
 
-    public void addHelper(String word, int wordIndex, INode curNode) {
+    private void addHelper(String word, int wordIndex, INode curNode) {
         // If there are more characters to be read from the word
         if(wordIndex < word.length()) {
             // Convert the current character into the appropriate index of the nodeArray
@@ -34,7 +34,7 @@ public class Trie implements ITrie {
                 curNode.getChildren()[nodeIndex] = new Node();
                 this.nodeCount++;
             }
-            // Jump 'into' this newly created node and recursively call addHelper on this new node and the next character
+            // Jump 'into' this node and recursively call addHelper on this new node and the next character
             curNode = curNode.getChildren()[nodeIndex];
             wordIndex++;
             addHelper(word, wordIndex, curNode);
@@ -50,7 +50,31 @@ public class Trie implements ITrie {
 
     @Override
     public INode find(String word) {
-        return null;
+        // Convert string to lower case, so our dictionary is not case-sensitive
+        word = word.toLowerCase();
+
+        // Begin the findHelper call at the first character of 'word' and at the root node
+        return findHelper(word, 0, root);
+    }
+
+    private INode findHelper(String word, int wordIndex, INode curNode) {
+        // If there are more characters to be read from the word
+        if(wordIndex < word.length()) {
+            // Convert the current character into the appropriate index of the nodeArray
+            char letter = word.charAt(wordIndex);
+            int nodeIndex = (int)letter - (int)'a';
+            // If a node at the above index does not exist, the word is not in the dictionary
+            if(curNode.getChildren()[nodeIndex] == null) {
+                return null;
+            } else {
+                // Jump 'into' this node and recursively call findHelper on this new node and the next character
+                curNode = curNode.getChildren()[nodeIndex];
+                wordIndex++;
+                return findHelper(word, wordIndex, curNode);
+            }
+        } else {
+            return curNode;
+        }
     }
 
     public INode getRoot() {
