@@ -1,5 +1,7 @@
 package spell;
 
+import java.util.Locale;
+
 public class Trie implements ITrie {
 
     private INode root;
@@ -14,7 +16,36 @@ public class Trie implements ITrie {
 
     @Override
     public void add(String word) {
+        // Convert string to lower case, so our dictionary is not case-sensitive
+        word = word.toLowerCase();
 
+        // Begin the addHelper call at the first character of 'word' and at the root node
+        addHelper(word, 0, root);
+    }
+
+    public void addHelper(String word, int wordIndex, INode curNode) {
+        // If there are more characters to be read from the word
+        if(wordIndex < word.length()) {
+            // Convert the current character into the appropriate index of the nodeArray
+            char letter = word.charAt(wordIndex);
+            int nodeIndex = (int)letter - (int)'a';
+            // If a node at the above index does not currently exist, create one and increment the tree's node count
+            if(curNode.getChildren()[nodeIndex] == null) {
+                curNode.getChildren()[nodeIndex] = new Node();
+                this.nodeCount++;
+            }
+            // Jump 'into' this newly created node and recursively call addHelper on this new node and the next character
+            curNode = curNode.getChildren()[nodeIndex];
+            wordIndex++;
+            addHelper(word, wordIndex, curNode);
+        } else {
+            // If this is a new word, increment the TREE's word count
+            if(curNode.getValue() == 0) {
+                this.wordCount++;
+            }
+            // Increment the WORD's frequency count
+            curNode.incrementValue();
+        }
     }
 
     @Override
