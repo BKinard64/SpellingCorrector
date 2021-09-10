@@ -1,6 +1,8 @@
 package spell;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class SpellCorrector implements ISpellCorrector {
 
@@ -12,7 +14,12 @@ public class SpellCorrector implements ISpellCorrector {
 
     @Override
     public void useDictionary(String dictionaryFileName) throws IOException {
+        File file = new File(dictionaryFileName);
+        Scanner scanner = new Scanner(file);
 
+        while(scanner.hasNext()) {
+            dictionary.add(scanner.next());
+        }
     }
 
     @Override
