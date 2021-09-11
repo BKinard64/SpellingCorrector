@@ -28,27 +28,27 @@ public class SpellCorrector implements ISpellCorrector {
         INode found = dictionary.find(inputWord);
         // If the word is in the dictionary, return inputWord
         if(found != null) {
-            return inputWord;
+            return inputWord.toLowerCase();
         }
 
         // If the word is not in the dictionary, generate the edit-dist-1 words and search the dict for them
-        Set<String> edits = new TreeSet<>();
+        Set<String> edits = new HashSet<>();
         Set<String> suggestions = new TreeSet<>();
         int maxFrequency = 0;
 
-        deletionDistance(inputWord, edits, suggestions, maxFrequency);
-        transpositionDistance(inputWord, edits, suggestions, maxFrequency);
-        alterationDistance(inputWord, edits, suggestions, maxFrequency);
-        insertionDistance(inputWord, edits, suggestions, maxFrequency);
+        maxFrequency = deletionDistance(inputWord, edits, suggestions, maxFrequency);
+        maxFrequency = transpositionDistance(inputWord, edits, suggestions, maxFrequency);
+        maxFrequency = alterationDistance(inputWord, edits, suggestions, maxFrequency);
+        maxFrequency = insertionDistance(inputWord, edits, suggestions, maxFrequency);
 
         // If there are no suggested words with edit distance of 1, generate edit-dist-2 words and search again
         if(suggestions.isEmpty()) {
             Set<String> edits2 = new HashSet<>();
             for(String word : edits) {
-                deletionDistance(word, edits2, suggestions, maxFrequency);
-                transpositionDistance(word, edits2, suggestions, maxFrequency);
-                alterationDistance(word, edits2, suggestions, maxFrequency);
-                insertionDistance(word, edits2, suggestions, maxFrequency);
+                maxFrequency = deletionDistance(word, edits2, suggestions, maxFrequency);
+                maxFrequency = transpositionDistance(word, edits2, suggestions, maxFrequency);
+                maxFrequency = alterationDistance(word, edits2, suggestions, maxFrequency);
+                maxFrequency = insertionDistance(word, edits2, suggestions, maxFrequency);
             }
         }
 
@@ -62,7 +62,7 @@ public class SpellCorrector implements ISpellCorrector {
         return itr.next();
     }
 
-    private void deletionDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
+    private int deletionDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
         for(int i = 0; i < word.length(); i++) {
             // Create string with character at index i removed
             String alternative = word.substring(0, i) + word.substring(i + 1);
@@ -81,9 +81,10 @@ public class SpellCorrector implements ISpellCorrector {
                 }
             }
         }
+        return maxVal;
     }
 
-    private void transpositionDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
+    private int transpositionDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
         for(int i = 0; i < word.length() - 1; i++) {
             // Transpose the ith and i+1th character and store as new string
             char[] c = word.toCharArray();
@@ -106,9 +107,10 @@ public class SpellCorrector implements ISpellCorrector {
                 }
             }
         }
+        return maxVal;
     }
 
-    private void alterationDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
+    private int alterationDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
         for(int i = 0; i < word.length(); i++) {
             for(int j = 0; j < 26; j++) {
                 // Replace current letter at index i with every other letter in alphabet
@@ -134,9 +136,10 @@ public class SpellCorrector implements ISpellCorrector {
                 }
             }
         }
+        return maxVal;
     }
 
-    private void insertionDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
+    private int insertionDistance(String word, Set<String> edits, Set<String> suggestions, int maxVal) {
         for(int i = 0; i <= word.length(); i++) {
             for(int j = 0; j < 26; j++) {
                 char alt = (char)((int)'a' + j);
@@ -158,6 +161,7 @@ public class SpellCorrector implements ISpellCorrector {
                 }
             }
         }
+        return maxVal;
     }
 
 }

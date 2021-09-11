@@ -11,7 +11,7 @@ public class Trie implements ITrie {
     public Trie() {
         root = new Node();
         wordCount = 0;
-        nodeCount = 0;
+        nodeCount = 1;
     }
 
     @Override
@@ -73,7 +73,11 @@ public class Trie implements ITrie {
                 return findHelper(word, wordIndex, curNode);
             }
         } else {
-            return curNode;
+            if(curNode.getValue() > 0) {
+                return curNode;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -93,13 +97,20 @@ public class Trie implements ITrie {
 
     @Override
     public int hashCode() {
-        // Find index of first null node in root
-        int index = 0;
-        while(root.getChildren()[index] != null && index < 26) {
-            index++;
+        // Multiply the wordCount and nodeCount
+        int code = wordCount * nodeCount;
+        // Find each non-null child of root and multiply/add the index if it is odd/even
+        for(int i = 0; i < root.getChildren().length; i++) {
+            if(root.getChildren()[i] != null) {
+                if(i % 2 == 1) {
+                    code *= i;
+                } else {
+                    code += i;
+                }
+            }
         }
-        // Add 1 to index and multiply it by the sum of wordCount and nodeCount
-        return (index + 1) * (wordCount + nodeCount);
+
+        return code;
     }
 
     @Override
@@ -150,7 +161,10 @@ public class Trie implements ITrie {
             INode child1 = n1.getChildren()[j];
             INode child2 = n2.getChildren()[j];
             if(child1 != null) {
-                return equalsHelper(child1, child2);
+                boolean equalTries = equalsHelper(child1, child2);
+                if (!equalTries) {
+                    return false;
+                }
             }
         }
 
